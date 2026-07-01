@@ -4,8 +4,9 @@
 class ApiConstants {
   ApiConstants._();
 
-  /// Base URL của backend. Đổi sang production khi go-live.
-  static const String baseUrl = 'https://api.example.com';
+  /// Base URL cua backend. Khi chay tren Android emulator/VM: 10.0.2.2 => localhost.
+  /// Doi sang IP LAN neu chay tren thiet bi thuc.
+  static const String baseUrl = 'http://10.0.2.2:4000';
 
   /// Thời gian timeout cho mỗi request (giây).
   static const int timeoutSeconds = 15;

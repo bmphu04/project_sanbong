@@ -6,7 +6,6 @@ import '../models/review.dart';
 class ReviewService {
   final ApiClient _api = ApiClient.instance;
 
-  /// POST /reviews
   Future<Review> createReview({
     required String bookingId,
     required int rating,
@@ -21,8 +20,7 @@ class ReviewService {
           if (comment != null && comment.trim().isNotEmpty) 'comment': comment.trim(),
         },
       );
-      // BE trả {message, review}
-      final reviewJson = (resp.data['review'] as Map<String, dynamic>?) ?? const {};
+      final reviewJson = (resp.data['review'] as Map<String, dynamic>?) ?? {};
       return Review.fromJson(reviewJson);
     } on DioException catch (e) {
       throw _toApi(e);

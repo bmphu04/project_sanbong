@@ -6,7 +6,6 @@ import '../models/stadium.dart';
 class FieldService {
   final ApiClient _api = ApiClient.instance;
 
-  /// GET /fields - danh sách tất cả sân (BE chỉ trả các sân có is_active=true)
   Future<List<Field>> getAllFields() async {
     try {
       final resp = await _api.raw.get<dynamic>('/fields');

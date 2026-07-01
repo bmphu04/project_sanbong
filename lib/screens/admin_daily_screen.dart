@@ -136,7 +136,7 @@ class _AdminDailyScreenState extends State<AdminDailyScreen> {
     // Group by field
     final byField = <String, List<AdminBooking>>{};
     for (final b in _bookings) {
-      final name = b.fieldInfo?.name ?? 'Sân bóng';
+      final name = b.fieldName ?? 'Sân bóng';
       byField.putIfAbsent(name, () => []).add(b);
     }
 
@@ -183,7 +183,7 @@ class _AdminDailyScreenState extends State<AdminDailyScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  b.userInfo?.name ?? 'Khách hàng',
+                  b.userName ?? 'Khách hàng',
                   style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
                 ),
                 const SizedBox(height: 4),
@@ -192,7 +192,7 @@ class _AdminDailyScreenState extends State<AdminDailyScreen> {
                   style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
                 ),
                 Text(
-                  b.userInfo?.phone ?? '',
+                  b.userPhone ?? '',
                   style: const TextStyle(fontSize: 12, color: AppColors.textHint),
                 ),
               ],

@@ -1,15 +1,12 @@
 import 'package:dio/dio.dart';
+import 'package:dio/dio.dart' as dio;
 import '../core/api_client.dart';
 import '../core/api_exception.dart';
 import '../models/user.dart';
-import 'package:dio/dio.dart' as dio;
 
 class AuthService {
   final ApiClient _api = ApiClient.instance;
 
-  // ===========================================================================
-  // POST /users/register
-  // ===========================================================================
   Future<String> register({
     required String name,
     required String email,
@@ -27,15 +24,13 @@ class AuthService {
         },
         options: dio.Options(extra: {'skipAuth': true}),
       );
-      return _api.messageOf(resp) ?? 'Đăng ký thành công. Vui lòng kiểm tra email để lấy mã OTP';
+      return _api.messageOf(resp) ??
+          'Đăng ký thành công. Vui lòng kiểm tra email để lấy mã OTP';
     } on DioException catch (e) {
       throw _toApiException(e);
     }
   }
 
-  // ===========================================================================
-  // POST /users/verify-otp
-  // ===========================================================================
   Future<String> verifyOtp({required String email, required String otpCode}) async {
     try {
       final resp = await _api.raw.post<dynamic>(
@@ -49,9 +44,6 @@ class AuthService {
     }
   }
 
-  // ===========================================================================
-  // POST /users/login
-  // ===========================================================================
   Future<AuthTokens> login({required String email, required String password}) async {
     try {
       final resp = await _api.raw.post<dynamic>(
@@ -66,9 +58,6 @@ class AuthService {
     }
   }
 
-  // ===========================================================================
-  // POST /users/logout
-  // ===========================================================================
   Future<String> logout({required String refreshToken}) async {
     try {
       final resp = await _api.raw.post<dynamic>(
@@ -81,9 +70,6 @@ class AuthService {
     }
   }
 
-  // ===========================================================================
-  // GET /users/me
-  // ===========================================================================
   Future<User> getMe() async {
     try {
       final resp = await _api.raw.get<dynamic>('/users/me');
@@ -94,9 +80,6 @@ class AuthService {
     }
   }
 
-  // ===========================================================================
-  // POST /users/forgot-password
-  // ===========================================================================
   Future<String> forgotPassword({required String email}) async {
     try {
       final resp = await _api.raw.post<dynamic>(
@@ -110,9 +93,6 @@ class AuthService {
     }
   }
 
-  // ===========================================================================
-  // POST /users/reset-password
-  // ===========================================================================
   Future<String> resetPassword({
     required String email,
     required String otpCode,

@@ -1,31 +1,85 @@
-import 'package:flutter/material.dart';
+library;
 
-class Stadium {
+import 'package:flutter/material.dart' show Color;
+
+class Field {
   final String id;
   final String name;
-  final String address;
-  final double rating;
-  final int reviewCount;
+  final int type; // 5 = san 5 nguoi, 7 = san 7 nguoi
   final double pricePerHour;
-  final String category;
+  final bool isActive;
   final List<String> amenities;
-  final List<TimeSlot> timeSlots;
-  final Color imageColor;
-  final String imageLabel;
+  final List<String> linkedFieldIds;
+  final String openingTime;
+  final String closingTime;
 
-  const Stadium({
+  const Field({
     required this.id,
     required this.name,
-    required this.address,
-    required this.rating,
-    required this.reviewCount,
+    required this.type,
     required this.pricePerHour,
-    required this.category,
+    required this.isActive,
     required this.amenities,
-    required this.timeSlots,
-    required this.imageColor,
-    required this.imageLabel,
+    required this.linkedFieldIds,
+    required this.openingTime,
+    required this.closingTime,
   });
+
+  String get typeLabel => 'Sân $type người';
+  String get category => typeLabel;
+
+  factory Field.fromJson(Map<String, dynamic> json) {
+    return Field(
+      id: json['_id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      type: (json['type'] as num?)?.toInt() ?? 5,
+      pricePerHour: (json['price_per_hour'] as num?)?.toDouble() ?? 0,
+      isActive: json['is_active'] as bool? ?? true,
+      amenities: ((json['amenities'] as List?) ?? [])
+          .map((e) => e.toString())
+          .toList(),
+      linkedFieldIds: ((json['linked_field_ids'] as List?) ?? [])
+          .map((e) => e.toString())
+          .toList(),
+      openingTime: json['opening_time']?.toString() ?? '06:00',
+      closingTime: json['closing_time']?.toString() ?? '22:00',
+    );
+  }
+
+  /// Chuyen doi thanh Stadium (UI model) de truyen vao DetailScreen/StadiumCard.
+  Stadium asStadium() => Stadium.fromField(this);
+}
+
+/// Model Stadium la UI model su dung boi DetailScreen & StadiumCard.
+class Stadium {
+  final Field _f;
+  const Stadium._(this._f);
+
+  factory Stadium.fromField(Field f) => Stadium._(f);
+
+  // --- Properties map tu Field ---
+  String get name => _f.name;
+  int get type => _f.type;
+  double get pricePerHour => _f.pricePerHour;
+  bool get isActive => _f.isActive;
+  List<String> get amenities => _f.amenities;
+  List<String> get linkedFieldIds => _f.linkedFieldIds;
+  String get openingTime => _f.openingTime;
+  String get closingTime => _f.closingTime;
+  String get typeLabel => _f.typeLabel;
+  String get category => _f.category;
+  String get id => _f.id;
+
+  // --- UI-specific properties ---
+  Color get imageColor => type == 7
+      ? const Color(0xFF2E7D32)
+      : const Color(0xFF1565C0);
+
+  String get imageLabel => typeLabel;
+  List<TimeSlot> get timeSlots => [];
+  double get rating => 4.8;
+  int get reviewCount => 128;
+  String get address => typeLabel;
 }
 
 class TimeSlot {
@@ -42,82 +96,74 @@ class TimeSlot {
   String get label => '$start - $end';
 }
 
-const List<Stadium> sampleStadiums = [
-  Stadium(
-    id: 's1',
+// =====================================================================
+// MOCK DATA - danh sach san cua HomeScreen (truoc khi goi API)
+// =====================================================================
+final List<Stadium> sampleStadiums = [
+  Stadium.fromField(const Field(
+    id: 'mock1',
     name: 'Sân Bóng Thống Nhất',
-    address: '123 Nguyễn Trãi, Quận 5, TP.HCM',
-    rating: 4.8,
-    reviewCount: 234,
+    type: 5,
     pricePerHour: 350000,
-    category: 'Sân 7 người',
-    amenities: ['Giữ xe', 'Nước uống', 'Tủ đồ', 'WiFi'],
-    timeSlots: [
-      TimeSlot(start: '07:00', end: '08:30', available: true),
-      TimeSlot(start: '08:30', end: '10:00', available: true),
-      TimeSlot(start: '15:00', end: '16:30', available: true),
-      TimeSlot(start: '16:30', end: '18:00', available: false),
-      TimeSlot(start: '18:00', end: '19:30', available: true),
-      TimeSlot(start: '19:30', end: '21:00', available: false),
-      TimeSlot(start: '21:00', end: '22:30', available: true),
-    ],
-    imageColor: Color(0xFF2E7D32),
-    imageLabel: 'Sân 7',
-  ),
-  Stadium(
-    id: 's2',
+    isActive: true,
+    amenities: ['Nước uống', 'WiFi', 'Giữ xe'],
+    linkedFieldIds: [],
+    openingTime: '06:00',
+    closingTime: '22:00',
+  )),
+  Stadium.fromField(const Field(
+    id: 'mock2',
     name: 'Sân Bóng Phú Thọ',
-    address: '215 Lý Thường Kiệt, Quận 11, TP.HCM',
-    rating: 4.6,
-    reviewCount: 187,
-    pricePerHour: 280000,
-    category: 'Sân 5 người',
-    amenities: ['Giữ xe', 'Nước uống', 'Tủ đồ'],
-    timeSlots: [
-      TimeSlot(start: '07:00', end: '08:30', available: true),
-      TimeSlot(start: '08:30', end: '10:00', available: false),
-      TimeSlot(start: '17:00', end: '18:30', available: true),
-      TimeSlot(start: '18:30', end: '20:00', available: true),
-      TimeSlot(start: '20:00', end: '21:30', available: false),
-    ],
-    imageColor: Color(0xFF1565C0),
-    imageLabel: 'Sân 5',
-  ),
-  Stadium(
-    id: 's3',
+    type: 7,
+    pricePerHour: 550000,
+    isActive: true,
+    amenities: ['Nước uống', 'Khán đài', 'WiFi'],
+    linkedFieldIds: [],
+    openingTime: '06:00',
+    closingTime: '22:00',
+  )),
+  Stadium.fromField(const Field(
+    id: 'mock3',
     name: 'Sân Bóng Hoàng Anh Gia Lai',
-    address: '50 Trường Chinh, Quận Tân Bình, TP.HCM',
-    rating: 4.9,
-    reviewCount: 412,
-    pricePerHour: 450000,
-    category: 'Sân 7 người',
-    amenities: ['Giữ xe', 'Nước uống', 'Tủ đồ', 'WiFi', 'Căng tin'],
-    timeSlots: [
-      TimeSlot(start: '06:00', end: '07:30', available: true),
-      TimeSlot(start: '07:30', end: '09:00', available: true),
-      TimeSlot(start: '17:00', end: '18:30', available: false),
-      TimeSlot(start: '18:30', end: '20:00', available: false),
-      TimeSlot(start: '20:00', end: '21:30', available: true),
-    ],
-    imageColor: Color(0xFFE65100),
-    imageLabel: 'Sân 7',
-  ),
-  Stadium(
-    id: 's4',
+    type: 5,
+    pricePerHour: 400000,
+    isActive: true,
+    amenities: ['WiFi', 'Tủ đồ'],
+    linkedFieldIds: [],
+    openingTime: '06:00',
+    closingTime: '22:00',
+  )),
+  Stadium.fromField(const Field(
+    id: 'mock4',
     name: 'Sân Bóng Rạch Miễu',
-    address: '88 Phan Xích Long, Quận Phú Nhuận, TP.HCM',
-    rating: 4.5,
-    reviewCount: 96,
-    pricePerHour: 220000,
-    category: 'Sân 5 người',
-    amenities: ['Giữ xe', 'Nước uống'],
-    timeSlots: [
-      TimeSlot(start: '08:00', end: '09:30', available: true),
-      TimeSlot(start: '16:00', end: '17:30', available: true),
-      TimeSlot(start: '17:30', end: '19:00', available: false),
-      TimeSlot(start: '19:00', end: '20:30', available: true),
-    ],
-    imageColor: Color(0xFF6A1B9A),
-    imageLabel: 'Sân 5',
-  ),
+    type: 7,
+    pricePerHour: 600000,
+    isActive: true,
+    amenities: ['Nước uống', 'Giữ xe', 'Khán đài'],
+    linkedFieldIds: [],
+    openingTime: '06:00',
+    closingTime: '22:00',
+  )),
+  Stadium.fromField(const Field(
+    id: 'mock5',
+    name: 'Sân Bóng Lam Viên',
+    type: 5,
+    pricePerHour: 300000,
+    isActive: true,
+    amenities: ['Nước uống'],
+    linkedFieldIds: [],
+    openingTime: '06:00',
+    closingTime: '22:00',
+  )),
+  Stadium.fromField(const Field(
+    id: 'mock6',
+    name: 'Sân Bóng Thanh Đa',
+    type: 7,
+    pricePerHour: 700000,
+    isActive: true,
+    amenities: ['WiFi', 'Giữ xe', 'Khán đài', 'Tủ đồ'],
+    linkedFieldIds: [],
+    openingTime: '06:00',
+    closingTime: '22:00',
+  )),
 ];
